@@ -31,28 +31,6 @@ def box_scene(step: int):
 
     camera = Camera(SceneWidth, SceneHeight, 60., EyePos, Center, RightVec)
 
-    """Write Your Matrix Here!!!
-
-    你需要做的工作：把需要的框填到线框里
-        B1: GREEN
-        B2: PINK
-        B3: CYON
-        B2移动后的位置: YELLOW
-
-    你需要完成下面的三个Task：
-
-    Task 1:
-        填写 B1_world, B2_world, B3_world，这样可以在对应位置绘制一个box线框
-
-    Task 2:
-        填写 B1_local, B2_local, B3_local，它们分别是相对于世界坐标系、B1局部坐标系、B2局部坐标系的变换矩阵
-
-    Task 3:   
-        填写 B2TransformMatrix，它是在B2局部坐标系下的变换矩阵，将B2移动到对应的位置
-
-    """
-
-
     @ti.kernel
     def mul_mat4(a: mat4, b: mat4) -> mat4:
         """mul_mat4 taichi矩阵乘法类
@@ -78,19 +56,58 @@ def box_scene(step: int):
         """
         return a.inverse()
 
-    B1_World = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
-    B2_World = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
-    B3_World = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    """Write Your Matrix Here!!!
 
+    你需要做的工作：把需要的框填到线框里
+        B1: GREEN
+        B2: PINK
+        B3: CYON
+        B2移动后的位置: YELLOW
 
-    B1_Local = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
-    B2_Local = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
-    B3_Local = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    你需要完成下面的三个Task：
+
+    Task 1:
+        填写 B1_world, B2_world, B3_world，这样可以在对应位置绘制一个box线框
+
+    Task 2:
+        填写 B1_local, B2_local, B3_local，它们分别是相对于世界坐标系、B1局部坐标系、B2局部坐标系的变换矩阵
+
+    Task 3:   
+        填写 B2TransformMatrix，它是在B2局部坐标系下的变换矩阵，将B2移动到对应的位置
+
+    """
+
+    B1_World = eular_translation_to_transmat(0, 0, 0, 3, 2, 1)
+    B2_World = eular_translation_to_transmat(0, 0, 45, 6, 0, 0)
+    B3_World = eular_translation_to_transmat(0, 90, 0, 8, 5*math.sqrt(2)/2, 0)
+
+    B1_Local = B1_World
+    B2_Local = mul_mat4(inv_mat4(B1_World), B2_World)
+    B3_Local = mul_mat4(inv_mat4(B2_World), B3_World)
 
     Target_B2_World = mat4([[1, 0, 0, 3], [0, 1, 0, 4], 
                             [0, 0, 1, 1], [0, 0, 0, 1]])
 
-    B2TransformMatrix = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    B2TransformMatrix = mul_mat4(inv_mat4(B2_World), Target_B2_World)
+
+
+
+
+    
+
+    # B1_World = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    # B2_World = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    # B3_World = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+
+
+    # B1_Local = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    # B2_Local = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    # B3_Local = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+
+    # Target_B2_World = mat4([[1, 0, 0, 3], [0, 1, 0, 4], 
+    #                         [0, 0, 1, 1], [0, 0, 0, 1]])
+
+    # B2TransformMatrix = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
 
 
 
