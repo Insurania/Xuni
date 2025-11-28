@@ -180,4 +180,12 @@ def update_fk(id_lst: ti.template(), local_mat_field: ti.template(),
     ti.loop_config(serialize=True)
     length = id_lst.shape[0]
     for i in range(length):
-        pass
+        parent_id = id_lst[i]
+
+        if parent_id == -1:
+            global_mat_field[i] = local_mat_field[i]
+        else:
+            global_mat_field[i] = global_mat_field[parent_id] @ local_mat_field[i]
+
+        mat = global_mat_field[i]
+        global_position[i] = vec3(mat[0, 3], mat[1, 3], mat[2, 3])
